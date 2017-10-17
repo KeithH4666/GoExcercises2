@@ -7,10 +7,9 @@ import (
 
 func requestHandler(w http.ResponseWriter, r *http.Request) {
 
-
 	w.Header().Set("Content-Type","text/html");// allows browser to render html tags
 
-	fmt.Fprintln(w, "Guessing Game")
+	fmt.Fprintln(w, "<h1>Guessing Game</h1>")
 }
 
 func main() {
