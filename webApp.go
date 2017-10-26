@@ -17,14 +17,29 @@ type guessStr struct{
 
 }
 
-
 func guess(w http.ResponseWriter, r *http.Request){
+	//Random
+	rand.Seed(time.Now().UTC().UnixNano())
+	//Target variable set random
+	target:=rand.Intn(20-1)
+	var cookie, err = r.Cookie("target")
 	
-	rand.Seed(time.Now().UnixNano())//Seeds time
+	//Ians Cookie//
+	if err == nil{
+		//if we could read it ,try to convert its value to an int
+		target, _ = strconv.Atoi(cookie.Value)
+		
+	}
+	cookie = &http.Cookie{
+		Name: "target",
+		Value: strconv.Itoa(target),
+		Expires: time.Now().Add(72 * time.Hour),
+	}
 	
-	expiration := time.Now().Add(365 * 24 * time.Hour)  ////Set cookie to expire in 1 year
-	cookie := http.Cookie{Name: "CookVal", Value:strconv.Itoa(rand.Intn(20)) , Expires: expiration}//Sets values to cookie + converts num between 1-20 to dtring
-	http.SetCookie(w, &cookie)//set cookie
+	//set the cookie
+	http.SetCookie(w,cookie)
+	
+	
 	
 	//Generate Template
 	t, _ := template.ParseFiles("template/time.html")
