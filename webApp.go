@@ -21,17 +21,17 @@ type guessStr struct{
 
 func guess(w http.ResponseWriter, r *http.Request){
 
-	//userConvo:=""
+	userConvo:=""
 	//Random
 	rand.Seed(time.Now().UTC().UnixNano())
 	//Target variable set random
-	target:=rand.Intn(20-1)
-	var cookie, err = r.Cookie("target")
+	rando:=rand.Intn(20-1)
+	var cookie, err = r.Cookie("rando")
 	
 	//Ians Cookie Method checks if value is set//
 	if err == nil{
 		//if we could read it ,try to convert its value to an int
-		target, _ = strconv.Atoi(cookie.Value)
+		rando, _ = strconv.Atoi(cookie.Value)
 	}
 	
 	//Sets the userGuess var to input of form guess + converts to int
@@ -39,10 +39,21 @@ func guess(w http.ResponseWriter, r *http.Request){
 	
 	var dispG = userGuess
 	
+	//Checks if user guess is equal to target
+	if userGuess == rando{
+		userConvo="Correct Guess - Cookie value has been reset - Try Again!"
+		rando=rand.Intn(20-1)
+		
+	}else if userGuess < rando{
+		userConvo="Try Again your guess  was  too low!"
+	}else{
+		userConvo="Try Again your guess was too high!"
+	}
+	
 	//Cookie
 	cookie = &http.Cookie{
-		Name: "target",
-		Value: strconv.Itoa(target),
+		Name: "rando",
+		Value: strconv.Itoa(rando),
 		Expires: time.Now().Add(72 * time.Hour),
 	}
 	
@@ -51,8 +62,8 @@ func guess(w http.ResponseWriter, r *http.Request){
 	
 	
 	//Generate Template
-	t, _ := template.ParseFiles("template/time.html")
-	t.Execute(w, &guessStr{Message: "Pick a number between 1-20:",DisUserG:dispG})
+	t, _ := template.ParseFiles("template/guess.html")
+	t.Execute(w, &guessStr{Message: "Pick a number between 0-20:",Guess:userConvo,DisUserG:dispG})
 
 }
 
